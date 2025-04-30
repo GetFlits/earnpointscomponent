@@ -5,19 +5,17 @@ const findCommonElements = (arr1, arr2) => {
     return tags?.filter((item) => set1.has(item.trim().toLowerCase()));
   }; 
   export function FlitsProductPagePoint(
-  customerID,
-  customerOrderCount,
   productData,
-  availableRules
+  flitsThemeAppExtensionObjects
   ) {
   let tempAmount = 0;
-  const customerId = customerID;
-  const customerOrder = parseInt(customerOrderCount || 0);
+  const customerId = flitsThemeAppExtensionObjects?.customer?.customer_id;
+  const customerOrder = parseInt(flitsThemeAppExtensionObjects?.customer?.orderCount || 0);
   
   const calculateAmount = (rule, value) =>
     rule.is_fixed ? rule.credits : (value * rule.credits) / 100;
   
-  const orderRules = availableRules?.rules?.all_rules_data?.filter(
+  const orderRules = flitsThemeAppExtensionObjects?.Metafields?.GET_RULES_FOR_GUEST_CUSTOMERS?.rules?.all_rules_data?.filter(
     (rule) => rule.module_on === "order_number"
   );
   
@@ -36,7 +34,7 @@ const findCommonElements = (arr1, arr2) => {
     tempAmount += calculateAmount(applicableOrderRule, (productData?.price / 100));
   }
   
-  const productTagRule = availableRules?.rules?.all_rules_data?.filter(
+  const productTagRule = flitsThemeAppExtensionObjects?.Metafields?.GET_RULES_FOR_GUEST_CUSTOMERS?.rules?.all_rules_data?.filter(
     (rule) => rule.module_on === "product_tag"
   );
   
@@ -56,11 +54,7 @@ const findCommonElements = (arr1, arr2) => {
   }
   
   export function FlitsCartPagePoint(
-  customerID,
-  customerOrderCount,
-  cartData,
-  availableRules,
-  IS_PRODUCT_TAG_CREDIT_PER_QUANTITY
+  cartData,flitsThemeAppExtensionObjects
   ) {
   const calculateAmount = (ruleItem) => {
     if (!ruleItem) return 0;
@@ -68,12 +62,12 @@ const findCommonElements = (arr1, arr2) => {
       ? ruleItem.credits
       : (cartData.total_price * ruleItem.credits) / 10000;
   };
-  if (!cartData?.items?.length || !availableRules) return 0;
+  if (!cartData?.items?.length || !flitsThemeAppExtensionObjects?.Metafields?.GET_RULES_FOR_GUEST_CUSTOMERS) return 0;
   let tempEarnAmount = 0;
-  const customerId = customerID;
-  const customerOrder = parseInt(customerOrderCount || 0);
+  const customerId = flitsThemeAppExtensionObjects?.customer?.customer_id;
+  const customerOrder = parseInt(flitsThemeAppExtensionObjects?.customer?.orderCount || 0);
   
-  const orderNumberRules = availableRules?.rules?.all_rules_data.filter(
+  const orderNumberRules = flitsThemeAppExtensionObjects?.Metafields?.GET_RULES_FOR_GUEST_CUSTOMERS?.rules?.all_rules_data.filter(
     (rule) => rule.module_on === "order_number"
   );
   
@@ -92,7 +86,7 @@ const findCommonElements = (arr1, arr2) => {
   
   let productTagCountTemp = 0;
   
-  const productTagRules = availableRules?.rules?.all_rules_data.filter(
+  const productTagRules = flitsThemeAppExtensionObjects?.Metafields?.GET_RULES_FOR_GUEST_CUSTOMERS?.rules?.all_rules_data.filter(
     (rule) => rule.module_on === "product_tag"
   );
   
@@ -106,9 +100,9 @@ const findCommonElements = (arr1, arr2) => {
         if (matchingTags?.length > 0) {
           productTagCountTemp += element.is_fixed
             ? element.credits *
-              (IS_PRODUCT_TAG_CREDIT_PER_QUANTITY === 1 ? item?.quantity : 1)
+              (flitsThemeAppExtensionObjects?.Metafields?.IS_PRODUCT_TAG_CREDIT_PER_QUANTITY === 1 ? item?.quantity : 1)
             : ((item?.price / 100) *
-                (IS_PRODUCT_TAG_CREDIT_PER_QUANTITY === 1
+                (flitsThemeAppExtensionObjects?.Metafields?.IS_PRODUCT_TAG_CREDIT_PER_QUANTITY === 1
                   ? item?.quantity
                   : 1) *
                 element.credits) /
